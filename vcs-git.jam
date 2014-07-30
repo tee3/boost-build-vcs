@@ -1,0 +1,82 @@
+# Version Control System - Git
+#
+# @todo detect if git is available
+# @todo detect if the current repository is a git repository
+
+import path ;
+import errors ;
+
+# Generates a version string from the Git repository.
+#
+# If on a tag:
+#
+#    <tag-name>
+#
+# If not on a tag:
+#
+#    <nearest-tag-name>-<branch-name>-<commits-since-nearest-tag>-g<commit-id>
+#
+# If the repository is dirty, "-dirty" will be appended.
+rule generate-version-string ( directory )
+{
+   local v = "" ;
+
+   if ! [ executable-exists ]
+   {
+      errors.user-error "vcs-git: Git executable is not installed" ;
+   }
+
+   if ! [ is-repository $(directory) ]
+   {
+      errors.user-error "vcs-git: $(directory) is not a Git repository." ;
+   }
+
+   v = [ SHELL "git -C $(directory) describe --exact-match --dirty" ] ;
+
+   if $(v) != ""
+   {
+      local m = [ MATCH "^(.+)\n$" : $(v0) ] ;
+      if $(m)
+      {
+	 v = $(m[1]) ;
+      }
+   }
+   else
+   {
+      local v0 = [ SHELL "git -C $(directory) describe --long --dirty" ] ;
+      local m0 = [ MATCH "^(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?\n$" : $(v0) ] ;
+      if ! $(m0)
+      {
+	 errors.error "vcs-git: $(v0) does not match the expected regex" ;
+      }
+
+      local v1 = [ SHELL "git -C $(directory) describe --all --long --dirty" ] ;
+      local m1 = [ MATCH "^heads/(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?\n$" : $(v1) ] ;
+      if ! $(m1)
+      {
+	 errors.error "vcs-git: $(v1) does not match the expected regex" ;
+      }
+
+      v = "$(m0[1])-$(m0[2])-$(m1[1])-g$(m1[3])" ;
+      if $(m1[4])
+      {
+         v = "$(v)-dirty" ;
+      }
+   }
+
+   return $(v) ;
+}
+
+# Returns true if the given directory is a Git repository.
+rule is-repository ( directory )
+{
+   # @todo is there a better way?
+   return [ path.exists "$(directory)/.git" ] ;
+}
+
+# Return true if the Git executable exists.
+rule executable-exists ( )
+{
+   # @todo always say true for now
+   return 1 == 1 ;
+}
