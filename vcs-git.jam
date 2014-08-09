@@ -31,7 +31,7 @@ rule generate-version-string ( directory )
       errors.user-error "vcs-git: $(directory) is not a Git repository." ;
    }
 
-   v = [ SHELL "git -C $(directory) describe --exact-match --dirty" ] ;
+   v = [ SHELL "(cd $(directory) && git describe --exact-match --dirty)" ] ;
 
    if $(v) != ""
    {
@@ -43,14 +43,14 @@ rule generate-version-string ( directory )
    }
    else
    {
-      local v0 = [ SHELL "git -C $(directory) describe --long --dirty" ] ;
+      local v0 = [ SHELL "(cd $(directory) && git describe --long --dirty)" ] ;
       local m0 = [ MATCH "^(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?\n$" : $(v0) ] ;
       if ! $(m0)
       {
 	 errors.error "vcs-git: $(v0) does not match the expected regex" ;
       }
 
-      local v1 = [ SHELL "git -C $(directory) describe --all --long --dirty" ] ;
+      local v1 = [ SHELL "(cd $(directory) && git describe --all --long --dirty)" ] ;
       local m1 = [ MATCH "^heads/(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?\n$" : $(v1) ] ;
       if ! $(m1)
       {
