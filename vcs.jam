@@ -4,9 +4,13 @@
 
 import path ;
 import errors ;
+import assert ;
 
 import vcs-git ;
 import vcs-svn ;
+
+# the list of supported vcs
+supported_vcs = git svn ;
 
 # Generates a version string from the auto-detected VCS repository.
 rule generate-version-string ( directory )
@@ -16,18 +20,10 @@ rule generate-version-string ( directory )
     errors.user-error "$(directory) does not exist." ;
   }
 
-  if [ type $(directory) ] = "git"
-  {
-    return [ vcs-git.generate-version-string $(directory) ] ;
-  }
-  else if [ type $(directory) ] = "svn"
-  {
-    return [ vcs-svn.generate-version-string $(directory) ] ;
-  }
-  else
-  {
-    errors.error "vcs: unsupported vcs" ;
-  }
+  vcs = [ type $(directory) ] ;
+  assert.in $(vcs) : $(supported_vcs) ;
+
+  return [ vcs-$(vcs).generate-version-string $(directory) ] ;
 }
 
 # Returns a string describing the version control system.
@@ -46,6 +42,6 @@ rule type ( directory )
   }
   else
   {
-    return "" ;
+    errors.error "unknown vcs system at $(directory)" ;
   }
 }
