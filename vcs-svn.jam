@@ -68,21 +68,21 @@ rule generate-version-string ( directory )
       {
          exact_match = "exact_match" ;
 
-	 tag = $(tagm[1]) ;
+         tag = $(tagm[1]) ;
       }
 
       branchm = [ MATCH "^.*/branches/(.+)$" : $(url) ] ;
       if $(branchm)
       {
-	 branch = $(branchm[1]) ;
+         branch = $(branchm[1]) ;
       }
       else
       {
-	 trunkm = [ MATCH "^.*/(trunk)$" : $(url) ] ;
-	 if $(trunkm)
-	 {
-	    branch = $(trunkm[1]) ;
-	 }
+         trunkm = [ MATCH "^.*/(trunk)$" : $(url) ] ;
+         if $(trunkm)
+         {
+            branch = $(trunkm[1]) ;
+         }
       }
    }
 
