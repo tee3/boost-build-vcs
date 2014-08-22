@@ -32,10 +32,11 @@ rule generate-version-string ( directory )
    }
 
    v = [ SHELL "(cd $(directory) && git describe --exact-match --dirty)" ] ;
+   v = [ SPLIT_BY_CHARACTERS $(v) : "\n" ] ;
 
    if $(v) != ""
    {
-      local m = [ MATCH "^(.+)\n$" : $(v0) ] ;
+      local m = [ MATCH "^(.+)$" : $(v) ] ;
       if $(m)
       {
          v = $(m[1]) ;
@@ -44,14 +45,16 @@ rule generate-version-string ( directory )
    else
    {
       local v0 = [ SHELL "(cd $(directory) && git describe --long --dirty)" ] ;
-      local m0 = [ MATCH "^(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?\n$" : $(v0) ] ;
+      v0 = [ SPLIT_BY_CHARACTERS $(v0) : "\n" ] ;
+      local m0 = [ MATCH "^(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?$" : $(v0) ] ;
       if ! $(m0)
       {
          errors.error "vcs-git: $(v0) does not match the expected regex" ;
       }
 
       local v1 = [ SHELL "(cd $(directory) && git describe --all --long --dirty)" ] ;
-      local m1 = [ MATCH "^(heads|remotes/.+)/(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?\n$" : $(v1) ] ;
+      v1 = [ SPLIT_BY_CHARACTERS $(v1) : "\n" ] ;
+      local m1 = [ MATCH "^(heads|remotes/.+)/(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?$" : $(v1) ] ;
       if ! $(m1)
       {
          errors.error "vcs-git: $(v1) does not match the expected regex" ;
