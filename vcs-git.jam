@@ -5,6 +5,7 @@
 
 import path ;
 import errors ;
+import assert ;
 
 # Generates a version string from the Git repository.
 #
@@ -47,18 +48,12 @@ rule generate-version-string ( directory )
     local v0 = [ SHELL "(cd $(directory) && git describe --tags --long --dirty)" ] ;
     v0 = [ SPLIT_BY_CHARACTERS $(v0) : "\n" ] ;
     local m0 = [ MATCH "^(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?$" : $(v0) ] ;
-    if ! $(m0)
-    {
-      errors.error "vcs-git: $(v0) does not match the expected regex" ;
-    }
+    assert.variable-not-empty m0 ;
 
     local v1 = [ SHELL "(cd $(directory) && git describe --all --long --dirty)" ] ;
     v1 = [ SPLIT_BY_CHARACTERS $(v1) : "\n" ] ;
     local m1 = [ MATCH "^(heads|remotes/.+)/(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?$" : $(v1) ] ;
-    if ! $(m1)
-    {
-      errors.error "vcs-git: $(v1) does not match the expected regex" ;
-    }
+    assert.variable-not-empty m1 ;
 
     v = "$(m0[1])-$(m0[2])-$(m1[2])-g$(m1[4])" ;
     if $(m1[5])
