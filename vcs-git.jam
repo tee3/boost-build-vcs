@@ -19,67 +19,67 @@ import errors ;
 # If the repository is dirty, "-dirty" will be appended.
 rule generate-version-string ( directory )
 {
-   local v = "" ;
+  local v = "" ;
 
-   if ! [ executable-exists ]
-   {
-      errors.user-error "vcs-git: Git executable is not installed" ;
-   }
+  if ! [ executable-exists ]
+  {
+    errors.user-error "vcs-git: Git executable is not installed" ;
+  }
 
-   if ! [ is-repository $(directory) ]
-   {
-      errors.user-error "vcs-git: $(directory) is not a Git repository." ;
-   }
+  if ! [ is-repository $(directory) ]
+  {
+    errors.user-error "vcs-git: $(directory) is not a Git repository." ;
+  }
 
-   v = [ SHELL "(cd $(directory) && git describe --tags --exact-match --dirty)" ] ;
-   v = [ SPLIT_BY_CHARACTERS $(v) : "\n" ] ;
+  v = [ SHELL "(cd $(directory) && git describe --tags --exact-match --dirty)" ] ;
+  v = [ SPLIT_BY_CHARACTERS $(v) : "\n" ] ;
 
-   if $(v) != ""
-   {
-      local m = [ MATCH "^(.+)$" : $(v) ] ;
-      if $(m)
-      {
-         v = $(m[1]) ;
-      }
-   }
-   else
-   {
-      local v0 = [ SHELL "(cd $(directory) && git describe --tags --long --dirty)" ] ;
-      v0 = [ SPLIT_BY_CHARACTERS $(v0) : "\n" ] ;
-      local m0 = [ MATCH "^(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?$" : $(v0) ] ;
-      if ! $(m0)
-      {
-         errors.error "vcs-git: $(v0) does not match the expected regex" ;
-      }
+  if $(v) != ""
+  {
+    local m = [ MATCH "^(.+)$" : $(v) ] ;
+    if $(m)
+    {
+      v = $(m[1]) ;
+    }
+  }
+  else
+  {
+    local v0 = [ SHELL "(cd $(directory) && git describe --tags --long --dirty)" ] ;
+    v0 = [ SPLIT_BY_CHARACTERS $(v0) : "\n" ] ;
+    local m0 = [ MATCH "^(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?$" : $(v0) ] ;
+    if ! $(m0)
+    {
+      errors.error "vcs-git: $(v0) does not match the expected regex" ;
+    }
 
-      local v1 = [ SHELL "(cd $(directory) && git describe --all --long --dirty)" ] ;
-      v1 = [ SPLIT_BY_CHARACTERS $(v1) : "\n" ] ;
-      local m1 = [ MATCH "^(heads|remotes/.+)/(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?$" : $(v1) ] ;
-      if ! $(m1)
-      {
-         errors.error "vcs-git: $(v1) does not match the expected regex" ;
-      }
+    local v1 = [ SHELL "(cd $(directory) && git describe --all --long --dirty)" ] ;
+    v1 = [ SPLIT_BY_CHARACTERS $(v1) : "\n" ] ;
+    local m1 = [ MATCH "^(heads|remotes/.+)/(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?$" : $(v1) ] ;
+    if ! $(m1)
+    {
+      errors.error "vcs-git: $(v1) does not match the expected regex" ;
+    }
 
-      v = "$(m0[1])-$(m0[2])-$(m1[2])-g$(m1[4])" ;
-      if $(m1[5])
-      {
-         v = "$(v)-dirty" ;
-      }
-   }
+    v = "$(m0[1])-$(m0[2])-$(m1[2])-g$(m1[4])" ;
+    if $(m1[5])
+    {
+      v = "$(v)-dirty" ;
+    }
+  }
 
-   return $(v) ;
+  return $(v) ;
 }
 
 # Returns true if the given directory is a Git repository.
 rule is-repository ( directory )
 {
-   # @todo is there a better way?
-   return [ path.exists "$(directory)/.git" ] ;
+  # @todo is there a better way?
+  return [ path.exists "$(directory)/.git" ] ;
 }
 
 # Return true if the Git executable exists.
 rule executable-exists ( )
 {
-   # @todo always say true for now
-   return 1 == 1 ;
+  # @todo always say true for now
+  return 1 == 1 ;
 }
