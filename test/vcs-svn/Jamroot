@@ -8,6 +8,8 @@
 
 import vcs-svn ;
 
+import path ;
+import errors ;
 import assert ;
 
 assert.true vcs-svn.executable-exists ;
@@ -16,4 +18,43 @@ assert.true vcs-svn.executable-exists ;
 if [ vcs-svn.is-repository ../.. ]
 {
   echo [ vcs-svn.generate-version-string ../.. ] ;
+
+  echo [ vcs-svn.root-url ../.. ] ;
+  echo [ vcs-svn.ref ../.. ] ;
 }
+
+# a place to put the test repositories
+path-constant tmp : repositories ;
+
+local desired-url = https://github.com/boostorg/build ;
+local desired-refname = trunk ;
+local desired-dir = $(tmp)/boost-build-$(desired-refname) ;
+
+if [ path.exists $(desired-dir) ]
+{
+  errors.error "path $(desired-dir) exists, please remove" ;
+}
+
+local r = [ vcs-svn.fetch $(desired-url) : $(desired-dir) ] ;
+
+# @todo should work, but doesn't
+# assert.true path.exists $(desired-dir) ;
+
+local r = [ vcs-svn.checkout $(desired-dir) : $(desired-refname) ] ;
+
+actual-url = [ vcs-svn.root-url $(desired-dir) ] ;
+
+assert.equal $(actual-url) : $(desired-url) ;
+
+desired-ref = [ vcs-svn.ref $(desired-dir) : $(desired-refname) ] ;
+actual-ref = [ vcs-svn.ref $(desired-dir) ] ;
+
+assert.equal $(actual-ref) : $(desired-ref) ;
+
+# @todo not sure how to call this
+# assert.true vcs-svn.is-repository : $(location) ;
+
+echo [ vcs-svn.root-url $(desired-dir) ] ;
+echo [ vcs-svn.ref $(desired-dir) ] ;
+
+echo [ vcs-svn.generate-version-string $(desired-dir) ] ;

@@ -8,6 +8,8 @@
 
 import vcs-git ;
 
+import path ;
+import errors ;
 import assert ;
 
 assert.true vcs-git.executable-exists ;
@@ -16,4 +18,43 @@ assert.true vcs-git.executable-exists ;
 if [ vcs-git.is-repository ../.. ]
 {
   echo [ vcs-git.generate-version-string ../.. ] ;
+
+  echo [ vcs-git.root-url ../.. ] ;
+  echo [ vcs-git.ref ../.. ] ;
 }
+
+# a place to put the test repositories
+path-constant tmp : repositories ;
+
+local desired-url = https://github.com/boostorg/build ;
+local desired-refname = master ;
+local desired-dir = $(tmp)/boost-build-$(desired-refname) ;
+
+if [ path.exists $(desired-dir) ]
+{
+  errors.error "path $(desired-dir) exists, please remove" ;
+}
+
+local r = [ vcs-git.fetch $(desired-url) : $(desired-dir) ] ;
+
+# @todo should work, but doesn't
+# assert.true path.exists $(desired-dir) ;
+
+local r = [ vcs-git.checkout $(desired-dir) : $(desired-refname) ] ;
+
+actual-url = [ vcs-git.root-url $(desired-dir) ] ;
+
+assert.equal $(actual-url) : $(desired-url) ;
+
+desired-ref = [ vcs-git.ref $(desired-dir) : $(desired-refname) ] ;
+actual-ref = [ vcs-git.ref $(desired-dir) ] ;
+
+assert.equal $(actual-ref) : $(desired-ref) ;
+
+# @todo not sure how to call this
+# assert.true vcs-git.is-repository : $(location) ;
+
+echo [ vcs-git.root-url $(desired-dir) ] ;
+echo [ vcs-git.ref $(desired-dir) ] ;
+
+echo [ vcs-git.generate-version-string $(desired-dir) ] ;
