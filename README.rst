@@ -17,9 +17,7 @@ you would expect it to.
 Version Control Systems (vcs)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- `vcs <./tools/vcs.jam>`_
-   - `vcs-git <./tools/vcs-git.jam>`_
-   - `vcs-svn <./tools/vcs-svn.jam>`_
+- `Version Control Systems (vcs) <./vcs.rst>`_
 
 Testing Guidelines
 ------------------
