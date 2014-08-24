@@ -12,24 +12,6 @@ of supported version control system back ends.  Currently, Boost.Build
 ``vcs`` supports Subversion and Git.  Other systems should be
 straightforward to implement.
 
-``type ( directory )``
-
-   Returns the type of version control system for the indicated
-   directory, or the empty string if none was detected.
-
-``generate-version-string ( directory )``
-
-   Returns a string uniquely describing the state of the repository at
-   the given directory.
-
-   - When on a tag, all version control systems will return the tag name
-
-   - Otherwise
-
-      - Git: <nearest-tag-name>-<branch-name>-<commits-since-nearest-tag>-g<commit-id>
-
-      - Subversion: -<URL>--s<REV>
-
 Usage
 -----
 
@@ -88,24 +70,43 @@ below.
 Also, see the `test program for vcs <../test/vcs/Jamroot>`_ for an
 exhaustive example.
 
-Implementation
---------------
-
-Hopefully, the implementation will not be required to use this module.
-
-Please see the following files for further information.
-
-- `vcs <./vcs.jam>`_
-- `vcs-git <./vcs-git.jam>`_
-- `vcs-svn <./vcs-svn.jam>`_
-
-Backends
---------
+Design
+------
 
 The Boost.Build ``vcs`` module depends on separate backends to
 implement the interface.  The backend file should be named
-``vcs-backend.jam`` and should implement each of the functions defined
+``vcs-BACKEND.jam`` where BACKEND is the name of the backend and
+should contain implementations for each of the functions defined
 below.
+
+Currently, there are two supported backends:
+
+- Git
+- Subversion
+
+Reference
+---------
+
+``type ( directory )``
+
+   Returns the type of version control system for the indicated
+   directory, or the empty string if none was detected.
+
+``generate-version-string ( directory )``
+
+   Returns a string uniquely describing the state of the repository at
+   the given directory.
+
+   - When on a tag, all version control systems will return the tag name
+
+   - Otherwise
+
+      - Git: <nearest-tag-name>-<branch-name>-<commits-since-nearest-tag>-g<commit-id>
+
+      - Subversion: -<URL>--s<REV>
+
+Backends Reference
+------------------
 
 ``generate-version-string ( directory )``
 
@@ -124,3 +125,20 @@ below.
 
    Returns true if the executable required to support the backend
    exists on the system.
+
+Implementation
+--------------
+
+Hopefully, the implementation will not be required to use this module,
+but they are included here for reference.
+
+``vcs`` Interface
+~~~~~~~~~~~~~~~~~
+
+- `vcs <./vcs.jam>`_
+
+Backends
+~~~~~~~~
+
+- `vcs-git <./vcs-git.jam>`_
+- `vcs-svn <./vcs-svn.jam>`_
