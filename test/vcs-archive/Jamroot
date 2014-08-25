@@ -1,0 +1,51 @@
+# @todo HACK - add tools to the Boost.Build path
+{
+  import modules ;
+
+  local x = [ modules.peek : BOOST_BUILD_PATH ] ;
+  modules.poke : BOOST_BUILD_PATH : ../../tools $(x) ;
+}
+
+import vcs-archive ;
+
+import path ;
+import errors ;
+import assert ;
+
+assert.true vcs-archive.executable-exists ;
+
+# a place to put the test repositories
+path-constant tmp : repositories ;
+
+local desired-url = https://github.com/boostorg/build/archive/boost-1.55.0.tar.gz ;
+local desired-refname = boost-1.55.0 ;
+local desired-dir = $(tmp)/boost-build-$(desired-refname) ;
+
+if [ path.exists $(desired-dir) ]
+{
+  errors.error "path $(desired-dir) exists, please remove" ;
+}
+
+local r = [ vcs-archive.fetch $(desired-url) : $(desired-dir) ] ;
+
+# @todo should work, but doesn't
+# assert.true path.exists $(desired-dir) ;
+
+local r = [ vcs-archive.checkout $(desired-dir) : $(desired-refname) ] ;
+
+actual-url = [ vcs-archive.root-url $(desired-dir) ] ;
+
+assert.equal $(actual-url) : $(desired-url) ;
+
+desired-ref = [ vcs-archive.ref $(desired-dir) : $(desired-refname) ] ;
+actual-ref = [ vcs-archive.ref $(desired-dir) ] ;
+
+assert.equal $(actual-ref) : $(desired-ref) ;
+
+# @todo not sure how to call this
+# assert.true vcs-archive.is-repository : $(location) ;
+
+echo [ vcs-archive.root-url $(desired-dir) ] ;
+echo [ vcs-archive.ref $(desired-dir) ] ;
+
+echo [ vcs-archive.generate-version-string $(desired-dir) ] ;
