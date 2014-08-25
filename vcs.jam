@@ -6,11 +6,13 @@ import path ;
 import errors ;
 import assert ;
 
-import vcs-git ;
-import vcs-svn ;
-
 # the list of supported vcs
-supported_vcs = git svn ;
+supported-vcs = git svn ;
+
+for vcs in $(supported-vcs)
+{
+  import vcs-$(vcs) ;
+}
 
 # Generates a version string from the auto-detected VCS repository.
 rule generate-version-string ( directory )
@@ -21,27 +23,27 @@ rule generate-version-string ( directory )
   }
 
   vcs = [ type $(directory) ] ;
-  assert.in $(vcs) : $(supported_vcs) ;
+  assert.in $(vcs) : $(supported-vcs) ;
 
   return [ vcs-$(vcs).generate-version-string $(directory) ] ;
 }
 
 # Returns a string describing the version control system.
-#
-#    git - Git
-#    svn - Subversion
 rule type ( directory )
 {
-  if [ vcs-git.is-repository $(directory) ]
+  t = ;
+  for vcs in $(supported-vcs)
   {
-    return "git" ;
+    if [ vcs-$(vcs).is-repository $(directory) ]
+    {
+      t = $(vcs) ;
+    }
   }
-  else if [ vcs-svn.is-repository $(directory) ]
-  {
-    return "svn" ;
-  }
-  else
+
+  if ! $(t)
   {
     errors.error "unknown vcs system at $(directory)" ;
   }
+
+  return $(t) ;
 }
