@@ -15,52 +15,13 @@ straightforward to implement.
 Usage
 -----
 
-The ``generate-version-string`` rule can be used to generate a version
-string for a program dynamically.  The example below shows how to use
-this to create a ``version_string.cpp`` file containing the version
-string.  The ``print`` module provides a mechanism to ensure that the
-generated file is only modified when the version string actually
-changes.
+The following example illustrates the use of the ``vcs`` module.
 
-::
-
-   # Jamroot at the root of a vcs repository
+.. code::
 
    import vcs ;
-   import print ;
 
-   exe versioned : main.cpp version_string.cpp ;
-
-   explicit version_string.cpp ;
-   make version_string.cpp : : @generate-file ;
-   rule generate-file ( target : sources * : properties * )
-   {
-      print.output $(target) ;
-      print.text "const char * version_string = \"$(v)\";" : true ;
-      print.text "" ;
-   }
-
-.. code:: cpp
-
-   // main.cpp - program to print the version string
-   #include <iostream>
-
-   extern const char * version_string;
-
-   int
-   main ()
-   {
-      std::cout << version_string << "\n";
-
-      return 0;
-   }
-
-An example Boost.Build project illustrating the vcs interface is shown
-below.
-
-::
-
-   import vcs ;
+   import assert ;
 
    # print the type of version control system and the generated
    # version string for this project
@@ -76,22 +37,23 @@ below.
    assert.equal [ vcs.root-url /path/to/desired/root ] : https://example.com/git/path/to/desired/root ;
    assert.equal [ vcs.ref /path/to/desired/root ] : [ vcs.ref /path/to/desired/root : 1.0 ] ;
 
-Also, see the `test program for vcs <./test/vcs/Jamroot>`_ for an
-exhaustive example.
+The `example/vcs <./example/vcs>`_ directory in the source
+repository contains a working example of the ``vcs`` module.
 
-Design
-------
+The `example/vcs-generate-version-string
+<./example/vcs-generate-version-string>`_ directory in the source
+repository contains the complete source code to generate a version
+string using the ``vcs`` module.  The listings below illustrate the
+use of ``vcs.generate-version-string`` to create a
+``version_string.cpp`` file containing the version string.  Note that
+the ``print`` module provides a mechanism to ensure that the generated
+file is only modified when the version string actually changes.
 
-The Boost.Build ``vcs`` module depends on separate backends to
-implement the interface.  The backend file should be named
-``vcs-BACKEND.jam`` where BACKEND is the name of the backend and
-should contain implementations for each of the functions defined
-below.
+.. include:: ./example/vcs-generate-version-string/jamroot.jam
+   :code:
 
-Currently, there are two supported backends:
-
-- Git
-- Subversion
+.. include:: ./example/vcs-generate-version-string/main.cpp
+   :code:
 
 Reference
 ---------
@@ -106,17 +68,21 @@ Reference
    Returns a string uniquely describing the state of the repository at
    the given directory.
 
-   - When on a tag, all version control systems will return the tag name
+   - When on a tag, all version control systems will return the tag
+     name
 
    - Otherwise
 
-      - Git: <nearest-tag-name>-<branch-name>-<commits-since-nearest-tag>-g<commit-id>
+      - Git: ``<nearest-tag-name>-<branch-name>-<commits-since-nearest-tag>-g<commit-id>``
 
-      - Subversion: -<URL>--s<REV>
+      - Subversion: ``-<URL>--s<REV>``
+
+   The ``generate-version-string`` rule can be used to generate a version
+   string for a program dynamically.
 
 ``fetch ( vcs : root-url : directory )``
 
-   Fetches the from the URL to the root of the vcs project to the
+   Fetches from the URL to the root of the vcs project to the
    indicated directory using vcs.
 
 ``checkout ( directory : symbolic-ref )``
@@ -135,10 +101,6 @@ Reference
    vcs project located at directory.  If the symbolic reference is
    given, the rule returns the reference of that symbolic reference,
    not the current state of the project.
-
-Note that the only rule that requires that that the type of version control
-system is specified is the ``get`` rule.  The rest detect the version
-control system from querying the given directory.
 
 Backends Reference
 ------------------
@@ -183,11 +145,30 @@ Backends Reference
    Returns true if the executable required to support the backend
    exists on the system.
 
+Design
+------
+
+The Boost.Build ``vcs`` module depends on separate backends to
+implement the interface.  The backend file should be named
+``vcs-BACKEND.jam`` where ``BACKEND`` is the name of the backend and
+should contain implementations for each of the functions defined
+below.
+
+Currently, there are two supported backends:
+
+- Git
+- Subversion
+
+Note that the only rule that requires the type of version control
+system to be specified is the ``fetch`` rule.  The rest of the rules
+detect the version control system from querying the given directory.
+
 Implementation
 --------------
 
-Hopefully, the implementation will not be required to use this module,
-but they are included here for reference.
+Hopefully, knowing the implementation will not be required to use this
+module, but a link to the implementation and links to the backends are
+included here for reference.
 
 ``vcs`` Interface
 ~~~~~~~~~~~~~~~~~

@@ -3,9 +3,17 @@
 # @todo detect if svn is available
 # @todo detect if the current repository is a Subversion repository
 
+import os ;
 import path ;
 import errors ;
 import assert ;
+
+# @todo SHELL commands below need to be abstracted to support all
+# systems.
+if [ os.name ] = VMS
+{
+  errors.error "VMS is not supported at this time." ;
+}
 
 # Generates a version string from the Subversion repository assuming a
 # standard repository layout.
@@ -16,13 +24,17 @@ import assert ;
 #
 # If not on a tag:
 #
-# @todo work to match the git format, missing nearest tag and commits
+# @todo work to match the Git format, missing nearest tag and commits
 # since nearest tag
 #
 #    -<URL>--s<REV>
 #
 # If the repository is dirty, "-dirty" will be appended.
-rule generate-version-string ( directory )
+#
+rule generate-version-string
+(
+  directory # A directory resulting from a fetch or checkout.
+)
 {
   local v = "" ;
 
@@ -36,7 +48,7 @@ rule generate-version-string ( directory )
     errors.user-error "vcs-svn: $(directory) is not a Subversion repository." ;
   }
 
-  local tag = "0" ;
+  local tag = "" ;
   local branch = "" ;
   local commits = "0" ;
   local revision = "" ;
@@ -98,7 +110,7 @@ rule generate-version-string ( directory )
   }
 
   # check if the working copy is dirty
-  if [ SHELL "cd $(directory) ; svn diff" ] != ""
+  if [ SHELL "cd $(directory) && svn diff" ] != ""
   {
     v = "$(v)-dirty" ;
   }
@@ -109,10 +121,16 @@ rule generate-version-string ( directory )
 # Fetches from the given url to the given directory.
 #
 #   svn checkout $(root-url)/trunk $(directory)
-rule fetch ( root-url : directory )
+#
+rule fetch
+(
+  root-url : # The root URL of the repository from which to fetch.
+  directory # A directory resulting from a fetch or checkout.
+)
 {
   # @todo check results
 
+  # @todo there may not be a trunk, what to do?
   local r = [ SHELL "svn checkout $(root-url)/trunk $(directory)" ] ;
 
   # @todo should work, but doesn't
@@ -127,7 +145,12 @@ rule fetch ( root-url : directory )
 #    trunk
 #    tags/1.1.1
 #    branches/devel-fixes
-rule checkout ( directory : symbolic-ref )
+#
+rule checkout
+(
+  directory : # A directory resulting from a Subversion fetch or checkout.
+  symbolic-ref ? # An optional Subversion-specific symbolic reference.
+)
 {
   # check errors, etc.
   local ru = [ root-url $(directory) ] ;
@@ -137,15 +160,18 @@ rule checkout ( directory : symbolic-ref )
 
 # Returns the root URL of the Subversion repository at the given
 # directory.
-rule root-url ( directory )
+#
+rule root-url
+(
+  directory # A directory resulting from a fetch or checkout.
+)
 {
   local u = ;
 
-  local lines = [ SHELL "( cd $(directory) && svn info )" ] ;
+  local output = [ SHELL "( cd $(directory) && svn info )" ] ;
+  local lines = [ SPLIT_BY_CHARACTERS $(output) : "\n" ] ;
   for local line in $(lines)
   {
-    line = [ SPLIT_BY_CHARACTERS $(line) : "\n" ] ;
-
     m = [ MATCH "^Repository Root: (.+)" : $(line) ] ;
     if $(m)
     {
@@ -160,14 +186,19 @@ rule root-url ( directory )
   return $(u) ;
 }
 
-# Returns the ref for the symbol-ref if it is not empty or HEAD for
-# the Subversion repository at directory.
+# Returns the reference for the symbol reference if it is not empty or
+# HEAD for the Subversion repository at directory.
 #
-# For a Subversion repository, a ref is the URL fragment beyond the
-# root and the last changed revision.
+# For a Subversion repository, a reference is the URL fragment beyond
+# the root and the last changed revision.
 #
 #    tags/1.1.1@12345
-rule ref ( directory : symbolic-ref ? )
+#
+rule ref
+(
+  directory : # A directory resulting from a fetch or checkout.
+  symbolic-ref ? # An optional Subversion-specific symbolic reference.
+)
 {
   local ru = [ root-url $(directory) ] ;
 
@@ -213,14 +244,19 @@ rule ref ( directory : symbolic-ref ? )
   return $(sr)@$(r) ;
 }
 
-# Returns true if the given directory is a Git repository.
-rule is-repository ( directory )
+# Returns true if the given directory is a Subversion repository.
+#
+rule is-repository
+(
+  directory # A directory resulting from a fetch or checkout.
+)
 {
   # @todo is there a better way?
   return [ path.exists "$(directory)/.svn" ] ;
 }
 
-# Return true if the Git executable exists.
+# Return true if the Subversion executable exists.
+#
 rule executable-exists ( )
 {
   # @todo always say true for now

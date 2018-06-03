@@ -3,11 +3,20 @@
 # @todo detect if git is available
 # @todo detect if the current repository is a git repository
 
+import os ;
 import path ;
 import errors ;
 import assert ;
 
-# Generates a version string from the Git repository.
+# @todo SHELL commands below need to be abstracted to support all
+# systems.
+if [ os.name ] = VMS
+{
+  errors.error "VMS is not supported at this time." ;
+}
+
+# Returns a version string representing the version of the Git
+# repository.
 #
 # If on a tag:
 #
@@ -18,7 +27,11 @@ import assert ;
 #    <nearest-tag-name>-<branch-name>-<commits-since-nearest-tag>-g<commit-id>
 #
 # If the repository is dirty, "-dirty" will be appended.
-rule generate-version-string ( directory )
+#
+rule generate-version-string
+(
+  directory # A directory resulting from a fetch or checkout.
+)
 {
   local v = "" ;
 
@@ -32,7 +45,14 @@ rule generate-version-string ( directory )
     errors.user-error "vcs-git: $(directory) is not a Git repository." ;
   }
 
-  v = [ SHELL "(cd $(directory) && git describe --tags --exact-match --dirty)" ] ;
+  if [ os.name ] = NT
+  {
+    v = [ SHELL "(cd $(directory) && git describe --tags --exact-match --dirty) 2> NUL" ] ;
+  }
+  else
+  {
+    v = [ SHELL "(cd $(directory) && git describe --tags --exact-match --dirty) 2> /dev/null" ] ;
+  }
   v = [ SPLIT_BY_CHARACTERS $(v) : "\n" ] ;
 
   if $(v) != ""
@@ -48,7 +68,10 @@ rule generate-version-string ( directory )
     local v0 = [ SHELL "(cd $(directory) && git describe --tags --long --dirty)" ] ;
     v0 = [ SPLIT_BY_CHARACTERS $(v0) : "\n" ] ;
     local m0 = [ MATCH "^(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?$" : $(v0) ] ;
-    assert.variable-not-empty m0 ;
+    if ! $(m0)
+    {
+      m0 = "" "" ;
+    }
 
     local v1 = [ SHELL "(cd $(directory) && git describe --all --long --dirty)" ] ;
     v1 = [ SPLIT_BY_CHARACTERS $(v1) : "\n" ] ;
@@ -68,7 +91,12 @@ rule generate-version-string ( directory )
 # Fetches from the given url to the given directory.
 #
 #   git clone --recurse-submodules $(root-url) $(directory)
-rule fetch ( root-url : directory )
+#
+rule fetch
+(
+  root-url : # The root URL of the repository from which to fetch.
+  directory # A directory resulting from a fetch or checkout.
+)
 {
   # @todo check results
   local r = [ SHELL "git clone --quiet $(root-url) $(directory)" ] ;
@@ -86,7 +114,12 @@ rule fetch ( root-url : directory )
 #    refs/heads/master
 #    refs/tags/1.1.1
 #    refs/heads/devel-fixes
-rule checkout ( directory : symbolic-ref )
+#
+rule checkout
+(
+  directory : # A directory resulting from a Git fetch or checkout.
+  symbolic-ref ? # An optional Git-specific symbolic reference.
+)
 {
   symbolic-ref = [ normalize-symbolic-ref $(symbolic-ref) ] ;
 
@@ -96,11 +129,16 @@ rule checkout ( directory : symbolic-ref )
 }
 
 # Returns the root URL of the Git repository at the given directory.
-rule root-url ( directory )
+#
+rule root-url
+(
+  directory # A directory resulting from a fetch or checkout.
+)
 {
   local u = ;
 
-  local lines = [ SHELL "(cd $(directory) && git remote -v)" ] ;
+  local output = [ SHELL "(cd $(directory) && git remote -v)" ] ;
+  local lines = [ SPLIT_BY_CHARACTERS $(output) : "\n" ] ;
   for local line in $(lines)
   {
     local m = [ MATCH "^origin[ 	]+(.+) .fetch." : $(line) ] ;
@@ -117,13 +155,18 @@ rule root-url ( directory )
   return $(u) ;
 }
 
-# Returns the ref for the symbolic-ref requested or HEAD if it is
-# empty for the git repository at directory.
+# Returns the reference for the symbolic reference requested or HEAD
+# if it is empty for the git repository at directory.
 #
-# For a Git repository, a ref is the SHA-1.
+# For a Git repository, a reference is the SHA-1.
 #
 #    deed12131a3334df4322
-rule ref ( directory : symbolic-ref ? )
+#
+rule ref
+(
+  directory : # A directory resulting from a fetch  or checkout.
+  symbolic-ref ? # An optional Git-specific symbolic reference.
+)
 {
   if ! $(symbolic-ref)
   {
@@ -135,24 +178,34 @@ rule ref ( directory : symbolic-ref ? )
 }
 
 # Returns true if the given directory is a Git repository.
-rule is-repository ( directory )
+#
+rule is-repository
+(
+  directory # A directory resulting from a fetch or checkout.
+)
 {
   # @todo is there a better way?
   return [ path.exists "$(directory)/.git" ] ;
 }
 
 # Return true if the Git executable exists.
+#
 rule executable-exists ( )
 {
   # @todo always say true for now
   return 1 == 1 ;
 }
 
-# normalize symbolic-ref
+# Returns a normalized symbolic reference.
 #
 #    refs/heads/* -> origin/*
+#
 #    refs/tags/* -> *
-local rule normalize-symbolic-ref ( symbolic-ref )
+#
+local rule normalize-symbolic-ref
+(
+  symbolic-ref # A Git-specific symbolic reference.
+)
 {
   local m0 = [ MATCH "^(refs/)?tags/(.+)$" : $(symbolic-ref) ] ;
   if $(m0)
