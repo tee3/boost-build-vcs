@@ -75,7 +75,7 @@ rule generate-version-string
 
     local v1 = [ SHELL "(cd $(directory) && git describe --all --long --dirty)" ] ;
     v1 = [ SPLIT_BY_CHARACTERS $(v1) : "\n" ] ;
-    local m1 = [ MATCH "^(heads|remotes/.+)/(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?$" : $(v1) ] ;
+    local m1 = [ MATCH "^(heads|tags|remotes/.+)/(.+)-([0-9]+)-g([0-9a-fA-F]+)(-dirty)?$" : $(v1) ] ;
     assert.variable-not-empty m1 ;
 
     v = "$(m0[1])-$(m0[2])-$(m1[2])-g$(m1[4])" ;
