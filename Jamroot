@@ -1,0 +1,41 @@
+import feature ;
+import toolset ;
+import generate ;
+import errors ;
+import assert ;
+
+feature.feature root-url : : free ;
+feature.feature symbolic-ref : : free ;
+
+toolset.flags get ROOT_URL <root-url> ;
+toolset.flags get SYMBOLIC_REF <symbolic-ref> ;
+
+# rule get ( directory : root-url : symbolic-ref )
+# {
+#   generate $(directory)
+#     : # sources
+#     : # requirements
+#       <generating-rule>@do-get
+
+#       <root-url>$(root-url)
+#       <symbolic-ref>$(symbolic-ref)
+#     ;
+# }
+
+actions do-get
+{
+  echo $(<) $(>)
+}
+
+#package boost-build : https://github.com/boostorg/build : boost-1.55.0 ;
+
+#get boost-build-boost-1.55.0 : https://github.com/boostorg/build : boost-1.55.0 ;
+
+generate boost-build-boost-1.55.0
+  : # sources
+  : # requirements
+    <generating-rule>@do-get
+
+    <root-url>https://github.com/boostorg/build
+    <symbolic-ref>boost-1.55.0
+  ;
