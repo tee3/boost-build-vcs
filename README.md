@@ -21,7 +21,6 @@ you would expect it to.
 * Version Control Systems
   * Git
   * Subversion
-* Make
 * AsciiDoctor
 
 ## Example
@@ -38,7 +37,7 @@ Run the following command to build an HTML version of the
 documentation.
 
 ``` shell
-asciidoctor vcs.adoc
+BOOST_BUILD_PATH=$(pwd) b2
 ```
 
 ## Testing
@@ -52,7 +51,7 @@ do it.
 To run the tests, run the following command.
 
 ``` shell
-BOOST_BUILD_PATH=$(pwd) make test
+BOOST_BUILD_PATH=$(pwd) b2 --verbose-test -j 8 test
 ```
 
 ## Reference
