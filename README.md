@@ -27,6 +27,12 @@ you would expect it to.
 
 See the [user manual](vcs.adoc) for an example.
 
+Run the following command to build the examples.
+
+``` shell
+BOOST_BUILD_PATH=$(pwd) b2 --verbose-test -j 8 example
+```
+
 ## Documentation
 
 The documentation is contained within the Boost.Build module file
