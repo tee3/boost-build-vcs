@@ -34,7 +34,7 @@ To run the tests, run the following command.
 
 ::
 
-   $ make test
+   $ BOOST_BUILD_PATH=$(pwd) make test
 
 Coding Conventions
 ------------------
