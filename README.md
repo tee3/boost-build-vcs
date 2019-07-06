@@ -3,12 +3,12 @@
 <!-- accompanying file LICENSE_1_0.txt or copy at -->
 <!-- http://www.boost.org/LICENSE_1_0.txt) -->
 
-# Boost.Build Version Control System Extensions (VCS)
+# Version Control Systems (VCS) for Boost.Build
 
 ## Overview
 
-This repository provides a Boost.Build extension for Version Control
-Systems (VCS).
+This project provides a Boost.Build module for Version Control Systems
+(VCS).
 
 NOTE: According to the Boost.Build leaders, this is not a good
 approach for integrating VCS support, but it does provide a few useful

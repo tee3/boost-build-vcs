@@ -3,7 +3,7 @@
 <!-- accompanying file LICENSE_1_0.txt or copy at -->
 <!-- http://www.boost.org/LICENSE_1_0.txt) -->
 
-# Boost.Build vcs Module Demonstration
+# Using the Boost.Build vcs Module
 
 This Boost.Build project provides a demonstration of the functionality
 available from the `vcs` module.

@@ -3,7 +3,7 @@
 <!-- accompanying file LICENSE_1_0.txt or copy at -->
 <!-- http://www.boost.org/LICENSE_1_0.txt) -->
 
-# Generate a Version String from VCS
+# Generating a Version String using `vcs`
 
 This example shows how to generate a version string directly from the
 VCS system used to check out Boost.Build using the `vcs` module.
