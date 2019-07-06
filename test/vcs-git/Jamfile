@@ -11,13 +11,15 @@ import assert ;
 
 assert.true vcs-git.executable-exists ;
 
-# print information from vcs
-if [ vcs-git.is-repository ../.. ]
-{
-  echo [ vcs-git.generate-version-string ../.. ] ;
+path-constant root : ../.. ;
 
-  echo [ vcs-git.root-url ../.. ] ;
-  echo [ vcs-git.ref ../.. ] ;
+# print information from vcs
+if [ vcs-git.is-repository $(root) ]
+{
+  echo [ vcs-git.generate-version-string $(root) ] ;
+
+  echo [ vcs-git.root-url $(root) ] ;
+  echo [ vcs-git.ref $(root) ] ;
 }
 
 # a place to put the test repositories

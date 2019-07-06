@@ -9,13 +9,15 @@ import path ;
 import errors ;
 import assert ;
 
+path-constant root : ../.. ;
+
 # print information from vcs about this repository
-echo [ vcs.generate-version-string ../.. ] ;
-echo [ vcs.type ../.. ] ;
+echo [ vcs.generate-version-string $(root) ] ;
+echo [ vcs.type $(root) ] ;
 
 # check abstraction against however this repository is managed
-echo [ vcs.root-url ../.. ] ;
-echo [ vcs.ref ../.. ] ;
+echo [ vcs.root-url $(root) ] ;
+echo [ vcs.ref $(root) ] ;
 
 # Test the vcs interface for the indicated vcs, checking out the
 # indicated repository and symbolic reference, using the suffix as the

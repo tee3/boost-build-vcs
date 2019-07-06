@@ -11,13 +11,15 @@ import assert ;
 
 assert.true vcs-svn.executable-exists ;
 
-# print information from vcs
-if [ vcs-svn.is-repository ../.. ]
-{
-  echo [ vcs-svn.generate-version-string ../.. ] ;
+path-constant root : ../.. ;
 
-  echo [ vcs-svn.root-url ../.. ] ;
-  echo [ vcs-svn.ref ../.. ] ;
+# print information from vcs
+if [ vcs-svn.is-repository $(root) ]
+{
+  echo [ vcs-svn.generate-version-string $(root) ] ;
+
+  echo [ vcs-svn.root-url $(root) ] ;
+  echo [ vcs-svn.ref $(root) ] ;
 }
 
 # a place to put the test repositories
