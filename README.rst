@@ -22,7 +22,7 @@ you would expect it to.
 Version Control Systems (vcs)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- `Version Control Systems (vcs) <./vcs.rst>`_
+* `Version Control Systems (vcs) <./vcs.rst>`_
 
 Testing Guidelines
 ------------------
@@ -37,12 +37,12 @@ do it.
 
 To run the tests, run the following command.
 
-::
+.. code:: sh
 
-   $ BOOST_BUILD_PATH=$(pwd) make test
+   BOOST_BUILD_PATH=$(pwd) make test
 
 Coding Conventions
 ------------------
 
-- indents are two (2) spaces
-- line lengths have a soft limit of 72 characters
+* indents are two (2) spaces
+* line lengths have a soft limit of 72 characters

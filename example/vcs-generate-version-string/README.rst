@@ -13,7 +13,7 @@ This Boost.Build project generates a program to print out the version
 string of the current working directory.  It should be run with
 ``--verbose-test`` so the result is easy to see.
 
-.. code::
+.. code:: sh
 
    b2 --verbose-test
 

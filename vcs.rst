@@ -73,14 +73,14 @@ Reference
    Returns a string uniquely describing the state of the repository at
    the given directory.
 
-   - When on a tag, all version control systems will return the tag
+   * When on a tag, all version control systems will return the tag
      name
 
-   - Otherwise
+   * Otherwise
 
-      - Git: ``<nearest-tag-name>-<branch-name>-<commits-since-nearest-tag>-g<commit-id>``
+      * Git: ``<nearest-tag-name>-<branch-name>-<commits-since-nearest-tag>-g<commit-id>``
 
-      - Subversion: ``-<URL>--s<REV>``
+      * Subversion: ``-<URL>--s<REV>``
 
    The ``generate-version-string`` rule can be used to generate a version
    string for a program dynamically.
@@ -161,8 +161,8 @@ below.
 
 Currently, there are two supported backends:
 
-- Git
-- Subversion
+* Git
+* Subversion
 
 Note that the only rule that requires the type of version control
 system to be specified is the ``fetch`` rule.  The rest of the rules
@@ -178,10 +178,10 @@ included here for reference.
 ``vcs`` Interface
 ~~~~~~~~~~~~~~~~~
 
-- `vcs <./vcs.jam>`_
+* `vcs <./vcs.jam>`_
 
 Backends
 ~~~~~~~~
 
-- `vcs-git <./vcs-git.jam>`_
-- `vcs-svn <./vcs-svn.jam>`_
+* `vcs-git <./vcs-git.jam>`_
+* `vcs-svn <./vcs-svn.jam>`_

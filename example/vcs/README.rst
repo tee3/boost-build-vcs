@@ -17,7 +17,7 @@ each of those repositories.
 This will create the following directory tree by checking out the
 Boost.Build source code at the indicated versions.
 
-::
+.. code::
 
    repositories
    repositories/git
