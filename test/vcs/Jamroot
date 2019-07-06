@@ -54,12 +54,12 @@ rule test-vcs ( vcs : root-url : symbolic-ref : path )
   echo [ vcs.generate-version-string $(desired-dir) ] ;
 }
 
-test-vcs git : https://github.com/boostorg/build : master : boost-build-master ;
-test-vcs git : https://github.com/boostorg/build : refs/heads/master : boost-build-refs-heads-master ;
-test-vcs git : https://github.com/boostorg/build : origin/master : boost-build-origin-master ;
-test-vcs git : https://github.com/boostorg/build : boost-1.55.0 : boost-build-boost-1.55.0 ;
-test-vcs git : https://github.com/boostorg/build : tags/boost-1.55.0 : boost-build-tags-boost-1.55.0 ;
-test-vcs git : https://github.com/boostorg/build : refs/tags/boost-1.55.0 : boost-build-refs-tags-boost-1.55.0 ;
+test-vcs git : "https://github.com/boostorg/build" : master : boost-build-master ;
+test-vcs git : "https://github.com/boostorg/build" : refs/heads/master : boost-build-refs-heads-master ;
+test-vcs git : "https://github.com/boostorg/build" : origin/master : boost-build-origin-master ;
+test-vcs git : "https://github.com/boostorg/build" : boost-1.55.0 : boost-build-boost-1.55.0 ;
+test-vcs git : "https://github.com/boostorg/build" : tags/boost-1.55.0 : boost-build-tags-boost-1.55.0 ;
+test-vcs git : "https://github.com/boostorg/build" : refs/tags/boost-1.55.0 : boost-build-refs-tags-boost-1.55.0 ;
 
-test-vcs svn : https://github.com/boostorg/build : trunk : boost-build-trunk ;
-test-vcs svn : https://github.com/boostorg/build : tags/boost-1.55.0 : boost-build-boost-tags-1.55.0 ;
+test-vcs svn : "https://github.com/boostorg/build" : trunk : boost-build-trunk ;
+test-vcs svn : "https://github.com/boostorg/build" : tags/boost-1.55.0 : boost-build-boost-tags-1.55.0 ;
