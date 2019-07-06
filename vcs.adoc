@@ -3,7 +3,7 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-= Boost.Build Version Control Systems (`vcs`) Module
+= Boost.Build module for Version Control Systems (`vcs`)
 
 :toc:
 
@@ -15,7 +15,7 @@ supported version control system back ends.  Currently, Boost.Build
 `vcs` supports Subversion and Git.  Other systems should be
 straightforward to implement.
 
-== Usage
+== User Manual
 
 The following example illustrates the use of the `vcs` module.
 
@@ -62,7 +62,9 @@ include::./example/vcs-generate-version-string/jamroot.jam[]
 include::./example/vcs-generate-version-string/main.cpp[]
 ----
 
-== Reference
+== Reference Manual
+
+=== Interface
 
 `type ( directory )`
 
@@ -104,7 +106,7 @@ include::./example/vcs-generate-version-string/main.cpp[]
    given, the rule returns the reference of that symbolic reference,
    not the current state of the project.
 
-== Backends Reference
+=== Backends
 
 `generate-version-string ( directory )`
 
@@ -146,7 +148,7 @@ include::./example/vcs-generate-version-string/main.cpp[]
    Returns true if the executable required to support the backend
    exists on the system.
 
-== Design
+=== Design
 
 The Boost.Build `vcs` module depends on separate backends to
 implement the interface.  The backend file should be named
@@ -163,17 +165,17 @@ Note that the only rule that requires the type of version control
 system to be specified is the `fetch` rule.  The rest of the rules
 detect the version control system from querying the given directory.
 
-== Implementation
+=== Implementation
 
 Hopefully, knowing the implementation will not be required to use this
 module, but a link to the implementation and links to the backends are
 included here for reference.
 
-=== `vcs` Interface
+==== `vcs` Interface
 
 * link:./vcs.jam[vcs]
 
-=== Backends
+==== Backends
 
 * link:./vcs-git.jam[vcs-git]
 * link:./vcs-svn.jam[vcs-svn]
