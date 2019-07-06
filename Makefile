@@ -1,6 +1,6 @@
 TOOLS = vcs vcs-git vcs-svn
 
-B2 = b2
+B2 = bjam
 B2FLAGS =
 
 all:
