@@ -18,7 +18,7 @@ if [ vcs-git.is-repository ../.. ]
 # a place to put the test repositories
 path-constant tmp : repositories ;
 
-local desired-url = https://github.com/boostorg/build ;
+local desired-url = "https://github.com/boostorg/build" ;
 local desired-refname = master ;
 local desired-dir = $(tmp)/boost-build-$(desired-refname) ;
 
