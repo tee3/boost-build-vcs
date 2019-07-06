@@ -17,7 +17,7 @@ you would expect it to.
 
 ### Version Control Systems (vcs)
 
-* [Version Control Systems (vcs)](vcs.rst)
+* [Version Control Systems (vcs)](vcs.adoc)
 
 ## Testing Guidelines
 
